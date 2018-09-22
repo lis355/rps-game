@@ -1,0 +1,13 @@
+{
+	"name": "rps-task-server",
+	"version": "1.0.0",
+	"author": "lis355",
+	"license": "MIT",
+	"scripts": {
+		"start": "node server.js"
+	},
+	"dependencies": {
+		"randomstring": "latest",
+		"socket.io": "^2.1.1"
+	}
+}

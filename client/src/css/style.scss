@@ -1,0 +1,17 @@
+@import "colors";
+
+@import "fonts";
+
+.test {
+    width: 100px;
+    height: 100px;
+    background-color: $main-color;
+}
+
+body {
+    font-family: 'Exo 2', sans-serif;
+}
+
+* {
+    transition: all 0.2s ease-in-out;
+}
