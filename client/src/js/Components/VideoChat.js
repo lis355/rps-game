@@ -7,9 +7,9 @@ module.exports = class VideoChat extends React.Component {
 	constructor(props) {
 		super(props);
 
-		this._call = new Call(this.props._player);
-		this._call.onLocalStream = stream => this.setState({localStream: stream});
-		this._call.onRemoteStream = stream => this.setState({remoteStream: stream});
+		// this._call = new Call(this.props._player);
+		// this._call.onLocalStream = stream => this.setState({localStream: stream});
+		// this._call.onRemoteStream = stream => this.setState({remoteStream: stream});
 
 		this.state = {};
 	}
@@ -60,13 +60,25 @@ module.exports = class VideoChat extends React.Component {
 		console.log("VideoChat render");
 
 		return (
-			<div>
-				{this._renderScreens()}
-				<div>
-					<Button outline color="primary" onClick={this.call.bind(this, {video: true, audio: true})}>Позвонить видео</Button>
-					<Button outline color="primary" onClick={this.call.bind(this, {audio: true})}>Позвонить аудио</Button>
-					<Button outline color="primary" onClick={this.abort.bind(this)}>Сбросить</Button>
+			<div className="absolute-fill d-flex justify-content-center">
+				<div className="col-sm"/>
+				<div className="col-sm d-flex flex-column justify-content-end">
+					<div className="card mb-3">
+						<div className="card-body p-3 d-flex flex-column">
+							<div className="d-flex">
+								<div className="bg-primary m-1 video-test"/>
+								<div className="bg-secondary m-1 video-test"/>
+							</div>
+							<div className="d-flex justify-content-center">
+								<button type="button" className="btn btn-circle btn-outline-success shadow-none m-2 icon-button d-flex justify-content-center align-items-center" onClick={this.call.bind(this, {audio: true})}><i className="fas fa-phone"/></button>
+								<button type="button" className="btn btn-circle btn-outline-danger shadow-none m-2 icon-button d-flex justify-content-center align-items-center" onClick={this.abort.bind(this)}><i className="fas fa-phone-slash"/></button>
+								<button type="button" className="btn btn-circle btn-outline-primary shadow-none m-2 icon-button d-flex justify-content-center align-items-center" onClick={this.call.bind(this, {video: true, audio: true})}><i className="fas fa-video"/></button>
+								<button type="button" className="btn btn-circle btn-outline-danger shadow-none m-2 icon-button d-flex justify-content-center align-items-center" onClick={this.abort.bind(this)}><i className="fas fa-video-slash"/></button>
+							</div>
+						</div>
+					</div>
 				</div>
+				<div className="col-sm"/>
 			</div>
 		);
 	}

@@ -71,16 +71,21 @@ module.exports = class Application extends React.Component {
 
 	_renderPages() {
 		switch (this.state.app) {
-			case states.CONNECTING: return this._renderWaitingForConnection();
-			case states.LOBBY: return this._renderRegisterPage();
-			case states.GAME: return this._renderGame();
-			default: console.error("Strange state"); break;
+			case states.CONNECTING:
+				return this._renderWaitingForConnection();
+			case states.LOBBY:
+				return this._renderRegisterPage();
+			case states.GAME:
+				return this._renderGame();
+			default:
+				console.error("Strange state");
+				break;
 		}
 	}
 
 	_renderWaitingForConnection() {
 		return (
-			<div className="m-auto">
+			<div className="absolute-fill d-flex justify-content-center align-items-center">
 				<h1>Waiting for server connection...</h1>
 			</div>
 		);
@@ -114,7 +119,10 @@ module.exports = class Application extends React.Component {
 
 	_renderGame() {
 		return (
-			<Chat player={this._player}/>
+			<div>
+				<VideoChat/>
+				<Chat player={this._player}/>
+			</div>
 		);
 	}
 
@@ -156,13 +164,19 @@ module.exports = class Application extends React.Component {
 
 				<hr/>
 
-				<div className={"flex-grow-1 position-relative d-flex"}>
+				<div className={"flex-grow-1 position-relative"}>
 					{this._renderPages()}
 				</div>
 
 				<nav className="flex-shrink-0 navbar navbar-expand-lg navbar-light bg-light">
 					<div className="container d-flex justify-content-center">
-						<span className="navbar-text text-center"><i>{"Author Ivan Lartsov"}</i></span>
+						<span className="navbar-text text-center"><i>{"Ivan Lartsov"}</i></span>
+						<a href="https://github.com/lis355/rps-game" className="text-secondary m-1 mr-3 ml-3">
+							<h3 className="m-0">
+								<i className="fab fa-github"/>
+							</h3>
+						</a>
+						<span className="navbar-text text-center"><i>{"Have a nice day :)"}</i></span>
 					</div>
 				</nav>
 
