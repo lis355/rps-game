@@ -17,6 +17,11 @@ html, body, #root {
 
 .chat-messages {
 	overflow-y: scroll;
+	flex-flow: column nowrap;
+}
+
+.chat-messages > :first-child {
+	margin-top: auto !important;
 }
 
 .chat-input-wrapper {

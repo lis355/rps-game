@@ -98,9 +98,6 @@ console.log(`Server start listening port ${config.port}`);
 
 io.on("connect", socket => {
 	console.log("connect " + socket.id);
-	for (let i = 0; i < 10; i++)
-		io.emit("message", {id: socket.id, text: getRandomId()});
-
 	socket.on("disconnect", () => {
 		console.log("disconnect " + socket.id);
 	}).on("join", opponentId => {
