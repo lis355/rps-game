@@ -1,7 +1,6 @@
 const React = require("react");
 const Player = require("./../Player");
-const Chat = require("./Chat");
-const VideoChat = require("./VideoChat");
+const Game = require("./Game");
 
 const {
 	Modal, ModalHeader, ModalBody, ModalFooter, Popover, PopoverHeader, PopoverBody
@@ -93,37 +92,38 @@ module.exports = class Application extends React.Component {
 
 	_renderRegisterPage() {
 		return (
-			<div className="card register-form align-self-start mt-5 ml-auto mr-auto">
-				<header className="card-header">
-					<h4 className="card-title">Connect to player</h4>
-					<span className="card-title">...or waiting for incoming connection</span>
-				</header>
-				<div className="card-body">
-					<div className="form-group row">
-						<label className="col-sm-3 col-form-label">Your ID</label>
-						<label className="col-sm-9 col-form-label"><b>{this._player.id}</b></label>
-					</div>
-					<div className="form-group row">
-						<label className="col-sm-3 col-form-label">Opponent ID</label>
-						<div className="col-sm-6 col-form-label">
-							<input type="text" className="form-control shadow-none" ref={e => e && (this._connectToPlayerInput = e)}/>
-						</div>
-						<div className="col-sm-3 col-form-label">
-							<button id="rules-popover-button" type="button" className="btn btn-outline-primary shadow-none" onClick={this.connectToPlayer.bind(this)}>Connect</button>
+			<div className="absolute-fill d-flex justify-content-center">
+				<div className="col-sm"/>
+				<div className="col-sm d-flex flex-column">
+					<div className="card">
+						<header className="card-header">
+							<h4 className="card-title">Connect to player</h4>
+							<span className="card-title">...or waiting for incoming connection</span>
+						</header>
+						<div className="card-body">
+							<div className="form-group row">
+								<label className="col-sm-3 col-form-label">Your ID</label>
+								<label className="col-sm-9 col-form-label"><b>{this._player.id}</b></label>
+							</div>
+							<div className="form-group row">
+								<label className="col-sm-3 col-form-label">Opponent ID</label>
+								<div className="col-sm-6 col-form-label">
+									<input type="text" className="form-control shadow-none" ref={e => e && (this._connectToPlayerInput = e)}/>
+								</div>
+								<div className="col-sm-3 col-form-label">
+									<button id="rules-popover-button" type="button" className="btn btn-outline-primary shadow-none" onClick={this.connectToPlayer.bind(this)}>Connect</button>
+								</div>
+							</div>
 						</div>
 					</div>
 				</div>
+				<div className="col-sm"/>
 			</div>
 		);
 	}
 
 	_renderGame() {
-		return (
-			<div>
-				<VideoChat/>
-				<Chat player={this._player}/>
-			</div>
-		);
+		return <Game player={this._player}/>;
 	}
 
 	_renderModal() {

@@ -17,10 +17,7 @@ html, body, #root {
 }
 
 .chat-box {
-	width: 20rem;
-	height: 30rem;
-	right: 0;
-	bottom: 0;
+	max-width: 320px;
 }
 
 .chat-messages {
@@ -40,10 +37,6 @@ html, body, #root {
 	font-style: italic;
 }
 
-.register-form {
-	width: 32rem;
-}
-
 .mw-75 {
 	max-width: 75%;
 }
@@ -57,4 +50,11 @@ html, body, #root {
 
 .video-test {
 	width: 320px; height: 240px;
+}
+
+@for $i from 1 through 12 {
+	.f-#{$i} {
+		flex: 0 0 ($i / 12 * 100%);
+		pointer-events: none;
+	}
 }
