@@ -1,14 +1,12 @@
 const React = require("react");
+const classNames = require("classnames");
 
 module.exports = class ChatMessage extends React.Component {
-	constructor(props) {
-		super(props);
-		console.log("create msg ", props);
-	}
-
 	render() {
+		let classes = this.props.isOwn ? "alert-primary text-right align-self-end" : "alert-secondary align-self-start";
+
 		return (
-			<div className={this.props.self ? "message-out" : "message-in"}><span>{this.props.message.text + (this.props.self ? "message-out" : "message-in")}</span></div>
+			<div className={classNames("rounded p-2 m-1 mw-75", classes)}>{this.props.text}</div>
 		);
 	}
 };

@@ -11,7 +11,7 @@ class Player {
 		this.onSetId = emptyFunction;
 		this.onJoined = emptyFunction;
 		this.onBadOpponentId = emptyFunction;
-		this.onLeave = emptyFunction;
+		this.onLeaved = emptyFunction;
 		this.onMessage = emptyFunction;
 		this.onCall = emptyFunction;
 	}
@@ -38,9 +38,9 @@ class Player {
 			}).on("badOpponentId", () => {
 				console.error("badOpponentId");
 				this.onBadOpponentId();
-			}).on("leave", () => {
-				console.log("leave");
-				this.onLeave();
+			}).on("leaved", () => {
+				console.log("leaved");
+				this.onLeaved();
 			}).on("message", message => {
 				console.log("message");
 				this.onMessage(message);
@@ -64,7 +64,7 @@ class Player {
 	}
 
 	sendMessage(messageText) {
-		this.socket.emit("message", {text: messageText})
+		this.socket.emit("message", messageText)
 	}
 
 	call(data) {

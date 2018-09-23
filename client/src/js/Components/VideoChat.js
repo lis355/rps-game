@@ -7,7 +7,7 @@ module.exports = class VideoChat extends React.Component {
 	constructor(props) {
 		super(props);
 
-		this._call = new Call(this.props.player);
+		this._call = new Call(this.props._player);
 		this._call.onLocalStream = stream => this.setState({localStream: stream});
 		this._call.onRemoteStream = stream => this.setState({remoteStream: stream});
 

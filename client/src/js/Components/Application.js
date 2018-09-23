@@ -1,5 +1,4 @@
 const React = require("react");
-const {findDOMNode} = require("react-dom");
 const Player = require("./../Player");
 const Chat = require("./Chat");
 const VideoChat = require("./VideoChat");
@@ -8,72 +7,74 @@ const {
 	Modal, ModalHeader, ModalBody, ModalFooter, Popover, PopoverHeader, PopoverBody
 } = require("reactstrap");
 
+const states = {
+	CONNECTING: 0,
+	LOBBY: 1,
+	GAME: 2
+};
+
 module.exports = class Application extends React.Component {
 	constructor(props) {
 		super(props);
 
-		this.player = new Player();
-		this.player.onSetId = id => this.setState({id: id});
-		this.player.onConnect = () => this.setState({connected: true});
-		this.player.onDisconnect = () => this.setState({connected: false});
-		this.player.onJoined = () => this.setState({joined: true});
+		this._player = new Player();
+		//this._player.onConnect = () => this.setState({connected: true, app: states.CONNECTING});
+		this._player.onDisconnect = () => this.setState({connected: false, app: states.CONNECTING});
+		//this._player.onSetId = () => this.setState({app: states.LOBBY});
+		this._player.onBadOpponentId = this._showBadOpponentIdMessage.bind(this);
+		this._player.onJoined = () => this.setState({app: states.GAME});
+		this._player.onLeaved = () => this.setState({app: states.LOBBY});
 
 		this.state = {
-			page: "register",
 			modal: false,
 			rulesPopoverOpen: false,
 
-			id: ""
+			app: states.CONNECTING
 		};
 
-		this.showModal = this.showModal.bind(this);
-		this.hideModal = this.hideModal.bind(this);
-		this.rulesPopoverOpenClose = this.rulesPopoverOpenClose.bind(this);
-
-		this._connectToPlayerInput;
-
-		setTimeout(this.showModal, 1000);
+		// DEBUG
+		this.state.app = states.GAME;
 	}
 
 	componentDidMount() {
-		this.player.start();
+		this._player.start();
 	}
 
 	componentWillUnmount() {
-		this.player.stop();
+		this._player.stop();
 	}
 
 	connectToPlayer() {
-		this.player.connectToPlayer(this._connectToPlayerInput.value);
+		this._player.connectToPlayer(this._connectToPlayerInput.value);
+		this._connectToPlayerInput.value = "";
 	}
 
-	leave() {
-		this.player.leave();
-		this.setState({joined: false});
+	_leave() {
+		this._player.leave();
 	}
 
-	showModal() {
-		this.setState({modal: true});
+	_showBadOpponentIdMessage() {
+		this._showModal("Error", "Bad opponent ID");
 	}
 
-	hideModal() {
+	_showModal(title, message) {
+		this.setState({modal: {title: title, message: message}});
+	}
+
+	_hideModal() {
 		this.setState({modal: false});
 	}
 
-	rulesPopoverOpenClose() {
-		this.setState({
-			rulesPopoverOpen: !this.state.rulesPopoverOpen
-		});
+	_rulesPopoverOpenClose() {
+		this.setState({rulesPopoverOpen: !this.state.rulesPopoverOpen});
 	}
 
 	_renderPages() {
-		switch (this.state.page) {
-			case "waitingConnection":
-				return this._renderWaitingForConnection();
-			case "register":
-				return this._renderRegisterPage();
-			case "game":
-				return this._renderGame();
+		switch (this.state.app) {
+			case states.CONNECTING: return this._renderWaitingForConnection();
+			case states.LOBBY: return this._renderRegisterPage();
+			case states.GAME: return this._renderGame();
+			default: console.error("Strange state"); break;
 		}
 	}
 
@@ -95,7 +96,7 @@ module.exports = class Application extends React.Component {
 				<div className="card-body">
 					<div className="form-group row">
 						<label className="col-sm-3 col-form-label">Your ID</label>
-						<label className="col-sm-9 col-form-label"><b>QweRt</b></label>
+						<label className="col-sm-9 col-form-label"><b>{this._player.id}</b></label>
 					</div>
 					<div className="form-group row">
 						<label className="col-sm-3 col-form-label">Opponent ID</label>
@@ -113,20 +114,18 @@ module.exports = class Application extends React.Component {
 
 	_renderGame() {
 		return (
-			<Chat/>
+			<Chat player={this._player}/>
 		);
 	}
 
 	_renderModal() {
 		return (
-			<Modal isOpen={this.state.modal} toggle={this.hideModal} className={this.props.className}>
-				<ModalHeader toggle={this.hideModal}>Modal title</ModalHeader>
+			<Modal isOpen={(Boolean)(this.state.modal)} toggle={this._hideModal.bind(this)} className={this.props.className}>
+				<ModalHeader toggle={this._hideModal.bind(this)}>{this.state.modal.title}</ModalHeader>
 				<ModalBody>
-					Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-				</ModalBody>
+					{this.state.modal.message}</ModalBody>
 				<ModalFooter>
-					<button type="button" className="btn btn-primary" onClick={this.hideModal}>Do Something</button>{' '}
-					<button type="button" className="btn btn-primary" onClick={this.hideModal}>Cancel</button>
+					<button type="button" className="btn btn-primary" onClick={this._hideModal.bind(this)}>OK</button>
 				</ModalFooter>
 			</Modal>
 		);
@@ -141,8 +140,9 @@ module.exports = class Application extends React.Component {
 						<div className="mr-0">
 							<ul className="navbar-nav mr-auto">
 								<li className="nav-item active">
-									<button id="rules-popover-button" type="button" onClick={this.rulesPopoverOpenClose} className="btn btn-outline-primary shadow-none">Rules</button>
-									<Popover placement="bottom" isOpen={this.state.rulesPopoverOpen} target="rules-popover-button" toggle={this.rulesPopoverOpenClose}>
+									{(this.state.app === states.GAME) && <button type="button" onClick={this._leave.bind(this)} className="btn btn-outline-primary shadow-none m-1">Leave</button>}
+									<button id="rules-popover-button" type="button" onClick={this._rulesPopoverOpenClose.bind(this)} className="btn btn-outline-primary shadow-none m-1">Rules</button>
+									<Popover placement="bottom" isOpen={this.state.rulesPopoverOpen} target="rules-popover-button" toggle={this._rulesPopoverOpenClose.bind(this)}>
 										<PopoverHeader>Rules</PopoverHeader>
 										<PopoverBody>
 											<img alt="Rules" src={require("./../../images/rules.png")}/>

@@ -2,11 +2,10 @@ const config = require("./../common/config");
 const io = require("socket.io")();
 const randomstring = require("randomstring").generate;
 
-/*
 function getRandomId() {
 	return randomstring(5);
 }
-
+/*
 class Player {
 	constructor(socket, manager) {
 		this.id = getRandomId();
@@ -99,6 +98,9 @@ console.log(`Server start listening port ${config.port}`);
 
 io.on("connect", socket => {
 	console.log("connect " + socket.id);
+	for (let i = 0; i < 10; i++)
+		io.emit("message", {id: socket.id, text: getRandomId()});
+
 	socket.on("disconnect", () => {
 		console.log("disconnect " + socket.id);
 	}).on("join", opponentId => {
@@ -113,10 +115,9 @@ io.on("connect", socket => {
 	}).on("leave", () => {
 		console.log("leave " + socket.id);
 		io.emit("leaved");
-	}).on("message", message => {
-		//console.log("message " + socket.id + message);
-		console.log("connect " + serialize(arguments));
-		io.emit("message", {id: socket.id, message: message});
+	}).on("message", messageText => {
+		console.log("message", messageText);
+		io.emit("message", {id: socket.id, text: messageText});
 	}).on("call", data => {
 		console.log("call " + socket.id + data);
 		socket.broadcast.emit("call", data);
