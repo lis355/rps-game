@@ -26,6 +26,18 @@ let config = {
 			{
 				test: /\.(scss|css)$/,
 				use: ["style-loader", "css-loader", "sass-loader"]
+			},
+			{
+				test: /\.(png|woff|woff2|eot|ttf|svg)$/,
+				use: [
+					{
+						loader: "file-loader",
+						options: {
+							name: "[name].[ext]",
+							outputPath: "assets"
+						}
+					}
+				]
 			}
 		]
 	},

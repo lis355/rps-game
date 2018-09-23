@@ -1,17 +1,36 @@
 @import "colors";
 
-@import "fonts";
-
-.test {
-    width: 100px;
-    height: 100px;
-    background-color: $main-color;
+.btn:focus, input:focus, .chat-input:focus {
+	outline: none;
 }
 
-body {
-    font-family: 'Exo 2', sans-serif;
+html, body, #root {
+	height: 100%;
 }
 
-* {
-    transition: all 0.2s ease-in-out;
+.chat-box {
+	width: 20rem;
+	height: 30rem;
+	right: 0;
+	bottom: 0;
+}
+
+.chat-messages {
+	overflow-y: scroll;
+}
+
+.chat-input-wrapper {
+	min-height: 2.5rem;
+}
+
+.chat-input {
+	font-style: italic;
+}
+
+.register-form {
+	width: 32rem;
+}
+
+.mw-75 {
+	max-width: 75%;
 }

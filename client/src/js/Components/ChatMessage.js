@@ -1,6 +1,6 @@
 const React = require("react");
 
-class ChatMessage extends React.Component {
+module.exports = class ChatMessage extends React.Component {
 	constructor(props) {
 		super(props);
 		console.log("create msg ", props);
@@ -11,6 +11,4 @@ class ChatMessage extends React.Component {
 			<div className={this.props.self ? "message-out" : "message-in"}><span>{this.props.message.text + (this.props.self ? "message-out" : "message-in")}</span></div>
 		);
 	}
-}
-
-module.exports = ChatMessage;
+};

@@ -7,5 +7,6 @@ require("bootstrap/dist/css/bootstrap.css");
 require("./../css/style.scss");
 
 const Application = require("./Components/Application");
+	//require("./Template");
 
 render(<Application/>, document.getElementById("root"));
