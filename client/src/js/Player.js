@@ -14,6 +14,7 @@ class Player {
 		this.onLeaved = emptyFunction;
 		this.onMessage = emptyFunction;
 		this.onCall = emptyFunction;
+		this.onGameMessage = emptyFunction;
 	}
 
 	start() {
@@ -47,6 +48,9 @@ class Player {
 			}).on("call", data => {
 				console.log("remote call ", data);
 				this.onCall(data);
+			}).on("game", data => {
+				console.log("game data ", data);
+				this.onGameMessage(data);
 			});
 	}
 
@@ -74,6 +78,10 @@ class Player {
 	call(data) {
 		console.log("call ", data);
 		this._socket.emit("call", data);
+	}
+
+	sendGameMessage(data) {
+		this._socket.emit("game", data)
 	}
 }
 

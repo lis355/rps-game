@@ -42,7 +42,7 @@ module.exports = class ShapesLine extends React.Component {
 		return (
 			<div className="d-flex justify-content-center">
 				{Object.keys(shapes).map((item, index) => {
-					return <Shape key={index} type={item} selected={this.state.selectedShape === item} onClick={this._onShapeClick.bind(this, item)}/>;
+					return <Shape key={index} type={item} selected={this.state.selectedShape === item} onClick={this.props.onShapeClick.bind(this, item)}/>;
 				})}
 			</div>
 		);

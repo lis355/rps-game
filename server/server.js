@@ -1,20 +1,22 @@
 const config = require("./../common/config");
 const io = require("socket.io")();
-// const randomstring = require("randomstring").generate;
+ const randomstring = require("randomstring").generate;
 const Enumerable = require("linq");
-//
-// function getRandomId() {
-// 	return randomstring(5);
-//}
 
+function getRandomId() {
+	return randomstring(5);
+}
+
+let shortIdBySocketId = {};
+let socketIdByShortId = {};
 let opponents = {};
 let engagedSockets = {};
 
 function socketJoin(socket, opponentId) {
-	if (opponentId === socket.id)
+	if (opponentId === getId(socket))
 		throw {text:"sameId", soft: true};
 
-	let opponentSocket = io.sockets.connected[opponentId];
+	let opponentSocket = io.sockets.connected[socketIdByShortId[opponentId]];
 	if (!opponentSocket)
 		throw {text:"badOpponentId", soft: true};
 
@@ -22,9 +24,9 @@ function socketJoin(socket, opponentId) {
 	if (opponent)
 		throw {text:"opponentAlreadyInGame", soft: true};
 
-	opponents[socket.id] = opponentSocket;
+	opponents[getId(socket)] = opponentSocket;
 	opponents[opponentId] = socket;
-	engagedSockets[socket.id] = true;
+	engagedSockets[getId(socket)] = true;
 	engagedSockets[opponentId] = true;
 
 	opponentSocket.emit("joined");
@@ -38,15 +40,37 @@ function socketLeave(socket) {
 }
 
 function freeOpponent(socket) {
-	let opponent = opponents[socket.id];
+	let opponent = opponents[getId(socket)];
 	if (opponent) {
 		opponent.emit("leaved");
 
-		delete opponents[socket.id];
+		delete opponents[getId(socket)];
 		delete opponents[opponent.id];
-		engagedSockets[socket.id] = false;
+		engagedSockets[getId(socket)] = false;
 		engagedSockets[opponent.id] = false;
 	}
+}
+
+function getId(socket) {
+	return shortIdBySocketId[socket.id];
+}
+
+function sendDataToOpponent(sender, messageType, data) {
+	let opponent = opponents[getId(sender)];
+	if (!opponent)
+		throw {text:"noOpponent"};
+
+	opponent.emit(messageType, data);
+}
+
+function sendChatMessageToOpponent(socket, messageText) {
+	let opponent = opponents[getId(socket)];
+	if (!opponent)
+		throw {text:"noOpponent"};
+
+	let message = {id: getId(socket), text: messageText};
+	opponent.emit("message", message);
+	socket.emit("message", message);
 }
 
 io.listen(config.port);
@@ -54,50 +78,46 @@ io.listen(config.port);
 console.log(`Server start listening port ${config.port}`);
 
 io.on("connect", socket => {
-	console.log("connect", socket.id);
+	shortIdBySocketId[socket.id] = getRandomId();
+	socketIdByShortId[getId(socket)] = socket.id;
+
+	console.log("connect", getId(socket));
 
 	let handlers = {
 		"disconnect": () => {
 			freeOpponent(socket);
+
+			delete shortIdBySocketId[socket.id];
+			delete socketIdByShortId[getId(socket)];
 		},
 		"join": opponentId => {
-			console.log("join " + socket.id);
 			socketJoin(socket, opponentId);
 		},
 		"leave": () => {
-			console.log("leave " + socket.id);
 			socketLeave(socket);
 		},
 		"message": messageText => {
-			console.log("message", messageText);
-			let opponent = opponents[socket.id];
-			if (!opponent)
-				throw {text:"noOpponent"};
-
-			let message = {id: socket.id, text: messageText}
-			opponent.emit("message", message);
-			socket.emit("message", message);
+			sendChatMessageToOpponent(socket, messageText);
 		},
 		"call": data => {
-			console.log("call " + socket.id + data);
-			let opponent = opponents[socket.id];
-			if (!opponent)
-				throw {text:"noOpponent"};
-
-			opponent.emit("call", data);
+			sendDataToOpponent(socket, "call", data);
+		},
+		"game": data => {
+			sendDataToOpponent(socket, "game", data);
 		}
 	};
 
 	for (let handler in handlers) {
 		socket.on(handler, data => {
 			try {
-				console.log(handler, socket.id, data);
+				console.log(handler, getId(socket), data);
 				handlers[handler](data);
 			}
 			catch (error) {
 				try {
 					socket.emit("serverError", error);
 				}
+				// eslint-disable-next-line no-empty
 				catch (error) {
 				}
 				finally {
@@ -105,6 +125,7 @@ io.on("connect", socket => {
 						if (!error.soft)
 							socket.disconnect();
 					}
+					// eslint-disable-next-line no-empty
 					catch (error) {
 					}
 					finally {
@@ -115,5 +136,5 @@ io.on("connect", socket => {
 		});
 	}
 
-	socket.emit("setId", socket.id);
+	socket.emit("setId", getId(socket));
 });

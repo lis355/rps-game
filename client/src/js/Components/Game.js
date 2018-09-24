@@ -8,7 +8,7 @@ module.exports = class Game extends React.Component {
 		return (
 			<div className="absolute-fill d-flex flex-column">
 				<div className="f-3 d-flex flex-column">
-					<GameField/>
+					<GameField player={this.props.player}/>
 				</div>
 				<div className="f-9 d-flex">
 					<div className="f-3"/>

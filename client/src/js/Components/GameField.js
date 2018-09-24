@@ -2,6 +2,24 @@ const React = require("react");
 const ShapesLine = require("./ShapesLine");
 
 module.exports = class GameField extends React.Component {
+	constructor(props) {
+		super(props);
+
+		this.state = {playerChose:false, opponentChose:false};
+	}
+
+	componentDidMount() {
+		this.props.player.onGameMessage = this._addMessage.bind(this);
+	}
+
+	componentWillUnmount() {
+		this.props.player.onGameMessage = null;
+	}
+
+	_onGameMessage(message) {
+
+	}
+
 	render() {
 		return [
 			<div key={0} className="f-10 d-flex justify-content-center align-items-center">
