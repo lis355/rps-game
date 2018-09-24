@@ -44,9 +44,8 @@ Shape.shapeWins = {
 };
 
 Shape.compareShape = function(a, b) {
-	if (!Shape.shapeWins[a] || !Shape.shapeWins[b]) return undefined;
-	if (Shape.shapeWins[a][b]) return -1;
-	if (Shape.shapeWins[b][a]) return 1;
+	if (Shape.shapeWins[a] && Shape.shapeWins[a].includes(b)) return -1;
+	if (Shape.shapeWins[b] && Shape.shapeWins[b].includes(a)) return 1;
 	if (a === b) return 0;
 	return undefined;
 };

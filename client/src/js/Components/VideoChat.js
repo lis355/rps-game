@@ -65,8 +65,8 @@ module.exports = class VideoChat extends React.Component {
 					<div className="card-body p-3 d-flex flex-column">
 						<div className="d-flex justify-content-center">
 							{this._renderScreens()}
-							{!this._isVideoCall() && <div className="bg-primary m-1 video-test"/>}
-							{!this._isVideoCall() && <div className="bg-secondary m-1 video-test"/>}
+							{/*{!this._isVideoCall() && <div className="bg-primary m-1 video-test"/>}*/}
+							{/*{!this._isVideoCall() && <div className="bg-secondary m-1 video-test"/>}*/}
 						</div>
 						<div className="d-flex justify-content-center">
 							{!this._isAudioCall() && !this._isVideoCall() && <button type="button" className="btn btn-circle btn-outline-success shadow-none m-2 icon-button d-flex justify-content-center align-items-center" onClick={this._callOpponent.bind(this, {audio: true})}><i className="fas fa-phone"/></button>}

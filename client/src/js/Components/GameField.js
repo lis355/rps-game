@@ -31,9 +31,9 @@ module.exports = class GameField extends React.Component {
 			game: this.gameStates.choosing,
 			selectedOpponentShape: "",
 			selectedPlayerShape: "",
-			playerSuccess: true,
+			playerSuccess: false,
 			playerFail: false,
-			opponentSuccess: true,
+			opponentSuccess: false,
 			opponentFail: false
 		});
 	}
@@ -47,6 +47,12 @@ module.exports = class GameField extends React.Component {
 			}
 
 			this.setStateAnimated(newState);
+
+			// DEBUG
+			// if (this.state.game === this.gameStates.choosing) {
+			// 	let y = Object.keys(Shape.type)[Math.floor(Math.random() * Object.keys(Shape.type).length)];
+			// 	setTimeout(() => {this._onShapeClick(y)}, 300);
+			// }
 		}
 	}
 
@@ -56,7 +62,8 @@ module.exports = class GameField extends React.Component {
 
 		let newState = {selectedPlayerShape: shape};
 
-		newState.game = this.state.game === this.gameStates.selectedOpponentShape ? this.gameStates.showResults : this.gameStates.waitingOpponent;
+		newState.game = this.state.selectedOpponentShape ? this.gameStates.showResults : this.gameStates.waitingOpponent;
+		newState.selectedOpponentShape = this.state.selectedOpponentShape;
 
 		this.setStateAnimated(newState);
 
@@ -69,7 +76,9 @@ module.exports = class GameField extends React.Component {
 		if (newState.game === this.gameStates.showResults) {
 			timeout = 1000;
 
-			let compareResult = Shape.compareShape(this.state.selectedPlayerShape, this.state.selectedOpponentShape);
+			let compareResult = Shape.compareShape(this.state.selectedPlayerShape || newState.selectedPlayerShape, this.state.selectedOpponentShape ||  newState.selectedOpponentShape);
+			console.log("compare", newState.selectedPlayerShape, newState.selectedOpponentShape, compareResult);
+
 			if (compareResult === -1) {
 				newState.playerSuccess = true;
 				newState.playerFail = false;
@@ -83,9 +92,9 @@ module.exports = class GameField extends React.Component {
 				newState.opponentFail = false;
 			}
 			else if (compareResult === 0) {
-				newState.playerSuccess = true;
+				newState.playerSuccess = false;
 				newState.playerFail = false;
-				newState.opponentSuccess = true;
+				newState.opponentSuccess = false;
 				newState.opponentFail = false;
 			}
 			else {
@@ -102,26 +111,35 @@ module.exports = class GameField extends React.Component {
 			if (newState.game === this.gameStates.showResults) {
 				setTimeout(() => {
 					this._startNewRound();
-				}, timeout);
+				}, timeout * 2);
 			}
 		}, timeout);
 	}
 
-	render() {
-		let label;
+	_getResultLabel() {
 		switch (this.state.game) {
 			case this.gameStates.choosing:
-				label = "Choose shape!";
-				break;
+				return "Choose shape!";
 			case this.gameStates.waitingOpponent:
-				label = "Wait for opponent chose...";
-				break;
+				return "Wait for opponent chose...";
 			case this.gameStates.showResults:
 			case this.gameStates.waitNextRound:
-				label = this.state.playerSuccess ? (this.state.opponentSuccess ? "Standoff! One more time?" : "You WIN!") : "You LOSE(";
-				break;
+				if (this.state.playerSuccess) {
+					return "You WIN!"
+				}
+				else if (this.state.opponentSuccess) {
+					return "You LOSE(";
+				}
+				else if (this.state.selectedPlayerShape === this.state.selectedOpponentShape) {
+					return "Standoff! One more time?";
+				}
+				else {
+					return "Oops! Confusion)";
+				}
 		}
+	}
 
+	render() {
 		return [
 			<div key={0} className="f-10 d-flex justify-content-center align-items-center">
 				<div className="f-6 d-flex flex-column justify-content-center align-items-center">
@@ -134,7 +152,7 @@ module.exports = class GameField extends React.Component {
 				</div>
 			</div>,
 			<div key={1} className="f-2 d-flex justify-content-center align-items-center">
-				<p className="lead">{label}</p>
+				<p className="lead">{this._getResultLabel()}</p>
 			</div>
 		];
 	}
