@@ -1,7 +1,6 @@
 const React = require("react");
 const Call = require("../Call/Call");
-
-const {Button} = require("reactstrap");
+const Sound = require("react-sound").default;
 
 module.exports = class VideoChat extends React.Component {
 	constructor(props) {
@@ -60,6 +59,7 @@ module.exports = class VideoChat extends React.Component {
 		console.log("VideoChat render");
 
 		return (
+
 			<div className="d-flex justify-content-center">
 				<div className="card mt-3 mb-3">
 					<div className="card-body p-3 d-flex flex-column">
@@ -69,13 +69,19 @@ module.exports = class VideoChat extends React.Component {
 							{/*{!this._isVideoCall() && <div className="bg-secondary m-1 video-test"/>}*/}
 						</div>
 						<div className="d-flex justify-content-center">
-							{!this._isAudioCall() && !this._isVideoCall() && <button type="button" className="btn btn-circle btn-outline-success shadow-none m-2 icon-button d-flex justify-content-center align-items-center" onClick={this._callOpponent.bind(this, {audio: true})}><i className="fas fa-phone"/></button>}
+							{!this._isAudioCall() && !this._isVideoCall() && <button type="button" className="btn btn-circle btn-outline-success shadow-none m-2 icon-button d-flex justify-content-center align-items-center calling" onClick={this._callOpponent.bind(this, {audio: true})}><i className="fas fa-phone"/></button>}
 							{this._isAudioCall() && <button type="button" className="btn btn-circle btn-outline-danger shadow-none m-2 icon-button d-flex justify-content-center align-items-center" onClick={this._abortCall.bind(this)}><i className="fas fa-phone-slash"/></button>}
 							{!this._isAudioCall() && !this._isVideoCall() && <button type="button" className="btn btn-circle btn-outline-primary shadow-none m-2 icon-button d-flex justify-content-center align-items-center" onClick={this._callOpponent.bind(this, {video: true, audio: true})}><i className="fas fa-video"/></button>}
 							{this._isVideoCall() && <button type="button" className="btn btn-circle btn-outline-danger shadow-none m-2 icon-button d-flex justify-content-center align-items-center" onClick={this._abortCall.bind(this)}><i className="fas fa-video-slash"/></button>}
 						</div>
 					</div>
 				</div>
+				<Sound
+					url={require("./../../sound/telephone-ring-03a.mp3")}
+					playStatus={Sound.status.PLAYING}
+					playFromPosition={0}
+					loop={true}
+				/>
 			</div>
 		);
 	}

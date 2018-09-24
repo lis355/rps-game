@@ -7,10 +7,13 @@ function getRandomId() {
 	return randomstring(5);
 }
 
+// словари для хранения id сокетов.
+// оригинальный socket.id слишком длинный и не красивый, будем использовать 5 буквенные хеши
+
 let shortIdBySocketId = {};
 let socketIdByShortId = {};
-let opponents = {};
-let engagedSockets = {};
+let opponents = {}; // словарь оппонентов по id игрока
+let engagedSockets = {}; // занятые сокеты, которые сейчай в игре
 
 function socketJoin(socket, opponentId) {
 	if (opponentId === getId(socket))
@@ -24,11 +27,14 @@ function socketJoin(socket, opponentId) {
 	if (opponent)
 		throw {text:"opponentAlreadyInGame", soft: true};
 
+	// игроки могут играть только в парах, т.е. у каждого сокета либо есть оппонент (играет) либо нет (ждет)
+
 	opponents[getId(socket)] = opponentSocket;
 	opponents[opponentId] = socket;
 	engagedSockets[getId(socket)] = true;
 	engagedSockets[opponentId] = true;
 
+	// отправляем обоим - начинаем игру
 	opponentSocket.emit("joined");
 	socket.emit("joined");
 }
@@ -55,6 +61,8 @@ function getId(socket) {
 	return shortIdBySocketId[socket.id];
 }
 
+// посылает произвольные сообшения нужными данными с пометкой типа messageType
+// нужно для сигнального сервера для видеозвонков и для чата
 function sendDataToOpponent(sender, messageType, data) {
 	let opponent = opponents[getId(sender)];
 	if (!opponent)
@@ -107,6 +115,9 @@ io.on("connect", socket => {
 			sendDataToOpponent(socket, "game", data);
 		}
 	};
+
+	// если в обработчике события от клиента что-то произошло - это может быть либо soft либо hard error, в первом случае
+	// дисконнект не нужен (например, пользователь неправильно набрал id)
 
 	for (let handler in handlers) {
 		socket.on(handler, data => {
