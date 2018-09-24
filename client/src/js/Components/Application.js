@@ -52,7 +52,8 @@ module.exports = class Application extends React.Component {
 		this._player.leave();
 	}
 
-	_showServerErrorMessage(message) {
+	_showServerErrorMessage(error) {
+		let message = error.text;
 		switch (message) {
 			case "sameId": message = "You are sending your's ID"; break;
 			case "alreadyInGame": message = "You are already in game"; break;
