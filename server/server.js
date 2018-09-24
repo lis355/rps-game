@@ -151,9 +151,9 @@ io.on("connect", socket => {
 	socket.emit("setId", getId(socket));
 
 	// DEBUG
-	if (Object.keys(socketIdByShortId).length === 2) {
-		let s = io.sockets.connected[Object.values(socketIdByShortId)[0]];
-
-		socketJoin(s, shortIdBySocketId[io.sockets.connected[Object.values(socketIdByShortId)[1]].id]);
-	}
+	// if (Object.keys(socketIdByShortId).length === 2) {
+	// 	let s = io.sockets.connected[Object.values(socketIdByShortId)[0]];
+	//
+	// 	socketJoin(s, shortIdBySocketId[io.sockets.connected[Object.values(socketIdByShortId)[1]].id]);
+	// }
 });
