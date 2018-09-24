@@ -19,7 +19,8 @@ module.exports = class ShapesLine extends React.Component {
 	}
 
 	_onShapeClick(shape) {
-		if (this.state.success
+		if (!this.props.userCanSelect
+			|| this.state.success
 			|| this.state.fail)
 			return;
 
