@@ -128,7 +128,7 @@ module.exports = class Application extends React.Component {
 
 	_renderModal() {
 		return (
-			<Modal isOpen={(Boolean)(this.state.modal)} toggle={this._hideModal.bind(this)} className={this.props.className}>
+			<Modal isOpen={this.state.modal === true} toggle={this._hideModal.bind(this)} className={this.props.className}>
 				<ModalHeader toggle={this._hideModal.bind(this)}>{this.state.modal.title}</ModalHeader>
 				<ModalBody>
 					{this.state.modal.message}</ModalBody>

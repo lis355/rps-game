@@ -48,13 +48,10 @@ html, body, #root {
 	font-size: 1.7rem;
 }
 
-.video-test {
+video, .video-test {
 	width: 320px; height: 240px;
 }
 
 @for $i from 1 through 12 {
-	.f-#{$i} {
-		flex: 0 0 ($i / 12 * 100%);
-		pointer-events: none;
-	}
+	.f-#{$i} { flex: 0 0 ($i / 12 * 100%); }
 }
