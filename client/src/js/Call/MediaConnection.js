@@ -104,7 +104,7 @@ module.exports = class MediaConnection {
 
 						if (sessionDescription.type === "answer") {
 							console.log("done sender");
-							this._descriptorsExchanged = true;
+							this._peersDescriptorsExchanged();
 						}
 						else if (sessionDescription.type === "offer") {
 							return this._getPeerConnection().createAnswer()
@@ -119,8 +119,7 @@ module.exports = class MediaConnection {
 									this._sendDescription(answerSessionDescription);
 
 									console.log("done reciever");
-
-									this._descriptorsExchanged = true;
+									this._peersDescriptorsExchanged();
 								});
 						}
 					})

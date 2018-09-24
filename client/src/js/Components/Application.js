@@ -55,10 +55,18 @@ module.exports = class Application extends React.Component {
 	_showServerErrorMessage(error) {
 		let message = error.text;
 		switch (message) {
-			case "sameId": message = "You are sending your's ID"; break;
-			case "alreadyInGame": message = "You are already in game"; break;
-			case "badOpponentId": message = "Bad opponent ID"; break;
-			default :message = "Server error"; break;
+			case "sameId":
+				message = "You are sending your's ID";
+				break;
+			case "alreadyInGame":
+				message = "You are already in game";
+				break;
+			case "badOpponentId":
+				message = "Bad opponent ID";
+				break;
+			default :
+				message = "Server error";
+				break;
 		}
 
 		this._showModal("Error", message);
@@ -103,31 +111,33 @@ module.exports = class Application extends React.Component {
 	_renderRegisterPage() {
 		return (
 			<div className="absolute-fill d-flex justify-content-center">
-				<div className="col-sm"/>
-				<div className="col-sm d-flex flex-column">
+				<div className="f-4"/>
+				<div className="f-4 d-flex flex-column">
 					<div className="card">
 						<header className="card-header">
 							<h4 className="card-title">Connect to player</h4>
 							<span className="card-title">...or waiting for incoming connection</span>
 						</header>
-						<div className="card-body">
-							<div className="form-group row">
-								<label className="col-sm-3 col-form-label">Your ID</label>
-								<label className="col-sm-9 col-form-label"><b>{this._player.id}</b></label>
+						<div className="card-body d-flex flex-column justify-content-center">
+							<div className="f-1"/>
+							<div className=" f-5 d-flex">
+								<label className="f-4 col-form-label">Your ID</label>
+								<label className="f-8 col-form-label"><b>{this._player.id}</b></label>
 							</div>
-							<div className="form-group row">
-								<label className="col-sm-3 col-form-label">Opponent ID</label>
-								<div className="col-sm-6 col-form-label">
+							<div className="f-3 d-flex align-items-center">
+								<label className="f-4 col-form-label">Opponent ID</label>
+								<div className="f-5 col-form-label">
 									<input type="text" className="form-control shadow-none" ref={e => e && (this._connectToPlayerInput = e)}/>
 								</div>
-								<div className="col-sm-3 col-form-label">
+								<div className="f-3 d-flex justify-content-center col-form-label">
 									<button id="rules-popover-button" type="button" className="btn btn-outline-primary shadow-none" onClick={this.connectToPlayer.bind(this)}>Connect</button>
 								</div>
 							</div>
+							<div className="f-1"/>
 						</div>
 					</div>
 				</div>
-				<div className="col-sm"/>
+				<div className="f-4"/>
 			</div>
 		);
 	}
