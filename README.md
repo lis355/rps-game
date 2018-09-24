@@ -21,10 +21,10 @@ npm install
 npm run build
 ```
 
-Then you can run script *start-client.bat* or use npm script, it uses live-server
+Then you can run script *start-client.bat* or use npm script, it uses http-server
 
 ```
-"client": "cd dist && live-server --host=localhost --port=9001"
+"client": "cd dist && http-server --host=localhost --port=9001"
 ```
 
 ### Server

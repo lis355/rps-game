@@ -51,9 +51,9 @@ function freeOpponent(socket) {
 		opponent.emit("leaved");
 
 		delete opponents[getId(socket)];
-		delete opponents[opponent.id];
+		delete opponents[getId(opponent)];
 		engagedSockets[getId(socket)] = false;
-		engagedSockets[opponent.id] = false;
+		engagedSockets[getId(opponent)] = false;
 	}
 }
 
