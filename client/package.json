@@ -4,7 +4,7 @@
 	"scripts": {
 		"dev": "webpack-dev-server --config webpack.config.js --mode=development",
 		"build": "webpack --config webpack.config.js --mode=development",
-		"client": "cd dist && http-server --host=localhost --port=9001"
+		"client": "cd dist && http-server -a localhost -p 9001"
 	},
 	"author": "lis355",
 	"license": "MIT",
