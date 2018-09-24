@@ -4,15 +4,15 @@ React / Socket IO / WebRTC rock-paper-scrissors game with text and video chat
 <p align="center"><img src="https://user-images.githubusercontent.com/2791094/45978922-2842ff80-c056-11e8-806a-ff3cab204749.png"
 width=600 height=355></p>
 
-Frontend: React JS, WebRTC for video and audio calls
-Backend: Node JS
-Socket IO for communication 
+* Frontend: React JS, WebRTC for video and audio calls, Bootstrap
+* Backend: Node JS
+* Socket IO for communication 
 
 App realize app with simply game, client-server communication via library Socket IO, text chat, video and audio calls
 
 ## Build
 
-There are 2 directories: client and server, you need to build them separately.
+There are 2 directories: client and server, you need to build them separately
 
 ### Client
 ```
