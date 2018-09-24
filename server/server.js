@@ -87,8 +87,9 @@ io.on("connect", socket => {
 		"disconnect": () => {
 			freeOpponent(socket);
 
+			let shortId = getId(socket);
 			delete shortIdBySocketId[socket.id];
-			delete socketIdByShortId[getId(socket)];
+			delete socketIdByShortId[shortId];
 		},
 		"join": opponentId => {
 			socketJoin(socket, opponentId);
@@ -137,4 +138,10 @@ io.on("connect", socket => {
 	}
 
 	socket.emit("setId", getId(socket));
+
+	if (Object.keys(socketIdByShortId).length === 2) {
+		let s = io.sockets.connected[Object.values(socketIdByShortId)[0]];
+
+		socketJoin(s, shortIdBySocketId[io.sockets.connected[Object.values(socketIdByShortId)[1]].id]);
+	}
 });

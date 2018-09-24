@@ -9,19 +9,7 @@ const shapeImages = {
 	spock: require("./../../images/spock.png")
 };
 
-module.exports = class Shape extends React.Component {
-	constructor(props) {
-		super(props);
-
-		this.shapes = {
-			rock: "rock",
-			paper: "paper",
-			scissors: "scissors",
-			lizard: "lizard",
-			spock: "spock"
-		};
-	}
-
+class Shape extends React.Component {
 	render() {
 		return (
 			<div className="position-relative d-flex justify-content-center align-items-center m-2">
@@ -37,4 +25,30 @@ module.exports = class Shape extends React.Component {
 			</div>
 		);
 	}
+}
+
+Shape.type = {
+	rock: "rock",
+	paper: "paper",
+	scissors: "scissors",
+	lizard: "lizard",
+	spock: "spock"
 };
+
+Shape.shapeWins = {
+	rock: [Shape.type.scissors, Shape.type.lizard],
+	paper: [Shape.type.rock, Shape.type.spock],
+	scissors: [Shape.type.paper, Shape.type.lizard],
+	lizard: [Shape.type.paper, Shape.type.spock],
+	spock: [Shape.type.rock, Shape.type.scissors]
+};
+
+Shape.compareShape = function(a, b) {
+	if (!Shape.shapeWins[a] || !Shape.shapeWins[b]) return undefined;
+	if (Shape.shapeWins[a][b]) return -1;
+	if (Shape.shapeWins[b][a]) return 1;
+	if (a === b) return 0;
+	return undefined;
+};
+
+module.exports = Shape;

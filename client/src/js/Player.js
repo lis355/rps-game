@@ -49,7 +49,7 @@ class Player {
 				console.log("remote call ", data);
 				this.onCall(data);
 			}).on("game", data => {
-				console.log("game data ", data);
+				console.log("game data recieve", data);
 				this.onGameMessage(data);
 			});
 	}
@@ -81,6 +81,7 @@ class Player {
 	}
 
 	sendGameMessage(data) {
+		console.log("game data send", data);
 		this._socket.emit("game", data)
 	}
 }
