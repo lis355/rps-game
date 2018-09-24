@@ -1,122 +1,115 @@
 const config = require("./../common/config");
 const io = require("socket.io")();
 const randomstring = require("randomstring").generate;
+const Enumerable = require("linq");
 
 function getRandomId() {
 	return randomstring(5);
 }
-/*
-class Player {
-	constructor(socket, manager) {
-		this.id = getRandomId();
-		this.socket = socket;
-		this.manager = manager;
 
-		this.socket.on("message", message => this.onMessage(message))
-			;//.on("connectToPlayer", data => this.onConnectToPlayer(data));
-
-		this.socket.emit("setId", this.id);
-	}
-
-	isInRoom() {
-		return this.socket.adapter.rooms.length === 2;
-	}
-
-	getRoom() {
-		return this.socket.adapter.rooms
-	}
-
-	onMessage(data) {
-		console.log(`Message from ${this.socket.id}: ${data}`);
-
-		if (!data
-			|| !data.text)
-			return;
-
-		this.socket.emit("message", {id: this.id, text: data.text});
-		console.log(`emit msg`);
-	}
-
-	onConnectToPlayer(data) {
-		console.log(`ConnectToPlayer from ${this.socket.id}: ${data}`);
-
-		if (!data
-			|| !data.id)
-			return;
-
-
-
-	}
+function getGameRoom(socket) {
+	return Enumerable.from(socket.adapter.rooms)
+		.firstOrDefault(x => x.value.length === 2);
 }
 
-class PlayersManager {
-	constructor(io) {
-		this.io = io;
-		this.players = {};
-	}
-
-	palyerConnected(socket) {
-		console.log("connect " + socket.id);
-
-		let palyer = new Player(socket, this);
-
-		this.io.sockets.
-
-		socket.on("disconnect", () => this.playerDisconnected(socket));
-
-		socket.on("join", opponentId => {
-			io.sockets.connected[socketId]
-		})
-
-
-
-		//test
-		//socket.emit("message", {id: this.players[socket].id, msg: socket.id});
-
-
-		// socket.on("connectToPlayer", data => this.onConnectToPlayer(data));
-		//
-		// socket.join("qqq");
-		// let q = socket.adapter.rooms;
-		// let qq = this.io.sockets;
-		// let qqq = this.io.sockets.adapter.rooms;
-		// let y=6;
-	}
-
-	playerDisconnected(socket) {
-		console.log("disconnect " + socket.id);
-		delete this.players[socket];
-	}
+function getMyRoom(socket) {
+	return Enumerable.from(socket.adapter.rooms)
+		.first(x =>	x.value.length === 1 && x.value.sockets[socket.id]);
 }
 
-let playersManager = new PlayersManager(io);
-*/
-//io.on("connect", playersManager.palyerConnected.bind(playersManager));
+function getOpponent(socket) {
+	return Enumerable.from(getGameRoom(socket).sockets)
+		.first(x =>
+			x.value.id !== socket.id);
+}
+
 io.listen(config.port);
 
 console.log(`Server start listening port ${config.port}`);
 
 io.on("connect", socket => {
-	console.log("connect " + socket.id);
-	socket.on("disconnect", () => {
-		console.log("disconnect " + socket.id);
-	}).on("join", opponentId => {
-		console.log("join " + opponentId);// socket.id);
-		let opponentSocket = io.sockets.connected[opponentId];
-		if (opponentSocket) {
-			io.emit("joined");
+	console.log("connect", socket.id);
+
+	let handlers = {
+		"disconnect": () => {
+			console.log("Disconnect", socket.id);
+		},
+		"join": opponentId => {
+			if (opponentId === socket.id)
+				throw "sameId";
+
+			let gameRoom = getGameRoom(socket);
+			if (gameRoom)
+				throw "alreadyInGame";
+
+			let opponentSocket = io.sockets.connected[opponentId];
+			if (!opponentSocket)
+				throw "badOpponentId";
+
+			let room = getMyRoom(socket);
+
+			opponentSocket.join(room);
+			opponentSocket.emit("joined");
+
+			socket.emit("joined");
+		},
+		"leave": () => {
+			console.log("leave " + socket.id);
+			let room = getGameRoom(socket);
+			if (!room)
+				throw "mustBeInGame";
+
+			Enumerable.from(room.sockets)
+				.forEach(x => {
+					let roomSocket = x.value;
+					roomSocket.leave(room);
+
+					room.emit("leaved");
+				});
+		},
+		"message": messageText => {
+			console.log("message", messageText);
+			let opponent = getOpponent(socket);
+			if (!opponent)
+				throw "noOpponent";
+
+			opponent.emit("message", {id: socket.id, text: messageText});
+		},
+		"call": data => {
+			console.log("call " + socket.id + data);
+			let opponent = getOpponent(socket);
+			if (!opponent)
+				throw "noOpponent";
+
+			opponent.emit("call", data);
 		}
-		else {
-			socket.emit("badOpponentId");
-		}
-	}).on("leave", () => {
-		console.log("leave " + socket.id);
-		io.emit("leaved");
-	}).on("message", messageText => {
-		console.log("message", messageText);
-		io.emit("message", {id: socket.id, text: messageText});
-	}).on("call", data => {
-		console.log("call " + socket.id + data);
-		socket.broadcast.emit("call", data);
-	}).emit("setId", socket.id);
+	};
+
+	for (let handler in handlers) {
+		socket.on(handler, data => {
+			try {
+				console.log(handler, socket.id, data);
+				handlers[handler](data);
+			}
+			catch (error) {
+				try {
+					socket.emit("serverError", error);
+				}
+				catch (error) {
+				}
+				finally {
+					try {
+						socket.disconnect();
+					}
+					catch (error) {
+					}
+					finally {
+						console.error(error);
+					}
+				}
+			}
+		});
+	}
+
+	socket.emit("setId", socket.id);
 });

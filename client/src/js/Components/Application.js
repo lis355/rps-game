@@ -17,22 +17,22 @@ module.exports = class Application extends React.Component {
 		super(props);
 
 		this._player = new Player();
-		//this._player.onConnect = () => this.setState({connected: true, app: states.CONNECTING});
+		this._player.onConnect = () => this.setState({connected: true, app: states.CONNECTING});
 		this._player.onDisconnect = () => this.setState({connected: false, app: states.CONNECTING});
-		//this._player.onSetId = () => this.setState({app: states.LOBBY});
-		this._player.onBadOpponentId = this._showBadOpponentIdMessage.bind(this);
+		this._player.onError = this._showServerErrorMessage.bind(this);
+		this._player.onSetId = () => this.setState({app: states.LOBBY});
 		this._player.onJoined = () => this.setState({app: states.GAME});
 		this._player.onLeaved = () => this.setState({app: states.LOBBY});
 
 		this.state = {
-			modal: false,
+			modal: null,
 			rulesPopoverOpen: false,
 
 			app: states.CONNECTING
 		};
 
 		// DEBUG
-		this.state.app = states.GAME;
+		//this.state.app = states.GAME;
 	}
 
 	componentDidMount() {
@@ -52,8 +52,15 @@ module.exports = class Application extends React.Component {
 		this._player.leave();
 	}
 
-	_showBadOpponentIdMessage() {
-		this._showModal("Error", "Bad opponent ID");
+	_showServerErrorMessage(message) {
+		switch (message) {
+			case "sameId": message = "You are sending your's ID"; break;
+			case "alreadyInGame": message = "You are already in game"; break;
+			case "badOpponentId": message = "Bad opponent ID"; break;
+			default :message = "Server error"; break;
+		}
+
+		this._showModal("Error", message);
 	}
 
 	_showModal(title, message) {
@@ -61,7 +68,9 @@ module.exports = class Application extends React.Component {
 	}
 
 	_hideModal() {
-		this.setState({modal: false});
+		this.setState({modal: null});
+
+		this._player.reConnect();
 	}
 
 	_rulesPopoverOpenClose() {
@@ -127,11 +136,14 @@ module.exports = class Application extends React.Component {
 	}
 
 	_renderModal() {
+		let title = this.state.modal ? this.state.modal.title : "";
+		let message = this.state.modal ? this.state.modal.message : "";
+
 		return (
-			<Modal isOpen={this.state.modal === true} toggle={this._hideModal.bind(this)} className={this.props.className}>
-				<ModalHeader toggle={this._hideModal.bind(this)}>{this.state.modal.title}</ModalHeader>
+			<Modal isOpen={this.state.modal !== null} toggle={this._hideModal.bind(this)} className={this.props.className}>
+				<ModalHeader toggle={this._hideModal.bind(this)}>{title}</ModalHeader>
 				<ModalBody>
-					{this.state.modal.message}</ModalBody>
+					{message}</ModalBody>
 				<ModalFooter>
 					<button type="button" className="btn btn-primary" onClick={this._hideModal.bind(this)}>OK</button>
 				</ModalFooter>

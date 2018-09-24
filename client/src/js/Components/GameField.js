@@ -4,7 +4,7 @@ const ShapesLine = require("./ShapesLine");
 module.exports = class GameField extends React.Component {
 	render() {
 		return [
-			<div className="f-10 d-flex justify-content-center align-items-center">
+			<div key={0} className="f-10 d-flex justify-content-center align-items-center">
 				<div className="f-6 d-flex flex-column justify-content-center align-items-center">
 					<p className="lead">Your shape's</p>
 					<ShapesLine userCanSelect={true}/>
@@ -14,7 +14,7 @@ module.exports = class GameField extends React.Component {
 					<ShapesLine/>
 				</div>
 			</div>,
-			<div className="f-2 d-flex justify-content-center align-items-center">
+			<div key={1} className="f-2 d-flex justify-content-center align-items-center">
 				<p className="lead">Select shape...</p>
 			</div>
 		];

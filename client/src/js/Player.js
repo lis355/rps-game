@@ -10,24 +10,27 @@ class Player {
 		this.onDisconnect = emptyFunction;
 		this.onSetId = emptyFunction;
 		this.onJoined = emptyFunction;
-		this.onBadOpponentId = emptyFunction;
+		this.onError = emptyFunction;
 		this.onLeaved = emptyFunction;
 		this.onMessage = emptyFunction;
 		this.onCall = emptyFunction;
 	}
 
 	start() {
-		if (this.socket)
+		if (this._socket)
 			return;
 
 		// eslint-disable-next-line no-undef
-		this.socket = io("http://localhost:" + PORT)
+		this._socket = io("http://localhost:" + PORT)
 			.on("connect", () => {
 				console.log("Connect");
 				this.onConnect();
 			}).on("disconnect", (reason) => {
 				console.log("Disconnect");
-				this.onDisconnect();
+				this.onDisconnect(reason);
+			}).on("serverError", error => {
+				console.error("serverError", error);
+				this.onError(error);
 			}).on("setId", id => {
 				console.log(`Server get id ${id}`);
 				this.id = id;
@@ -35,9 +38,6 @@ class Player {
 			}).on("joined", () => {
 				console.log("joined");
 				this.onJoined();
-			}).on("badOpponentId", () => {
-				console.error("badOpponentId");
-				this.onBadOpponentId();
 			}).on("leaved", () => {
 				console.log("leaved");
 				this.onLeaved();
@@ -51,25 +51,29 @@ class Player {
 	}
 
 	stop() {
-		this.socket.close();
-		this.socket = null;
+		this._socket.close();
+		this._socket = null;
+	}
+
+	reConnect() {
+		this._socket.connect();
 	}
 
 	connectToPlayer(opponentId) {
-		this.socket.emit("join", opponentId);
+		this._socket.emit("join", opponentId);
 	}
 
 	leave() {
-		this.socket.emit("leave");
+		this._socket.emit("leave");
 	}
 
 	sendMessage(messageText) {
-		this.socket.emit("message", messageText)
+		this._socket.emit("message", messageText)
 	}
 
 	call(data) {
 		console.log("call ", data);
-		this.socket.emit("call", data);
+		this._socket.emit("call", data);
 	}
 }
 
