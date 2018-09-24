@@ -52,6 +52,23 @@ video, .video-test {
 	width: 320px; height: 240px;
 }
 
+.shape, .shape-background {
+	width: 5rem;
+	height: 5rem;
+	border-radius: 2.5rem;
+	transition: all 0.1s ease-in-out;
+}
+
+.shape:hover/*, .shape-selected */{
+	transform: scale(1.1, 1.1);
+	filter: brightness(1.25);
+}
+
+.shape-background-selected {
+	transform: scale(1.2, 1.2);
+}
+
+
 @for $i from 1 through 12 {
 	.f-#{$i} { flex: 0 0 ($i / 12 * 100%); }
 }
