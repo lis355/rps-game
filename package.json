@@ -2,6 +2,7 @@
 	"name": "rps-game",
 	"version": "1.0.0",
 	"scripts": {
-		"install" : "cd server && install && cd ../client && install"
+		"install": "cd server && npm install && cd ../client && npm install",
+		"start": "cd server && npm start"
 	}
 }
