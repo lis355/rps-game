@@ -1,7 +1,8 @@
 const config = require("./../common/config");
+const http = require("http");
+const express = require("express");
 const io = require("socket.io")();
- const randomstring = require("randomstring").generate;
-const Enumerable = require("linq");
+const randomstring = require("randomstring").generate;
 
 function getRandomId() {
 	return randomstring(5);
@@ -17,15 +18,15 @@ let engagedSockets = {}; // занятые сокеты, которые сейч
 
 function socketJoin(socket, opponentId) {
 	if (opponentId === getId(socket))
-		throw {text:"sameId", soft: true};
+		throw {text: "sameId", soft: true};
 
 	let opponentSocket = io.sockets.connected[socketIdByShortId[opponentId]];
 	if (!opponentSocket)
-		throw {text:"badOpponentId", soft: true};
+		throw {text: "badOpponentId", soft: true};
 
 	let opponent = engagedSockets[opponentId];
 	if (opponent)
-		throw {text:"opponentAlreadyInGame", soft: true};
+		throw {text: "opponentAlreadyInGame", soft: true};
 
 	// игроки могут играть только в парах, т.е. у каждого сокета либо есть оппонент (играет) либо нет (ждет)
 
@@ -66,7 +67,7 @@ function getId(socket) {
 function sendDataToOpponent(sender, messageType, data) {
 	let opponent = opponents[getId(sender)];
 	if (!opponent)
-		throw {text:"noOpponent"};
+		throw {text: "noOpponent"};
 
 	opponent.emit(messageType, data);
 }
@@ -74,18 +75,14 @@ function sendDataToOpponent(sender, messageType, data) {
 function sendChatMessageToOpponent(socket, messageText) {
 	let opponent = opponents[getId(socket)];
 	if (!opponent)
-		throw {text:"noOpponent"};
+		throw {text: "noOpponent"};
 
 	let message = {id: getId(socket), text: messageText};
 	opponent.emit("message", message);
 	socket.emit("message", message);
 }
 
-io.listen(config.port);
-
-console.log(`Server start listening port ${config.port}`);
-
-io.on("connect", socket => {
+function socketConnect(socket) {
 	shortIdBySocketId[socket.id] = getRandomId();
 	socketIdByShortId[getId(socket)] = socket.id;
 
@@ -129,7 +126,7 @@ io.on("connect", socket => {
 				try {
 					socket.emit("serverError", error);
 				}
-				// eslint-disable-next-line no-empty
+					// eslint-disable-next-line no-empty
 				catch (error) {
 				}
 				finally {
@@ -137,7 +134,7 @@ io.on("connect", socket => {
 						if (!error.soft)
 							socket.disconnect();
 					}
-					// eslint-disable-next-line no-empty
+						// eslint-disable-next-line no-empty
 					catch (error) {
 					}
 					finally {
@@ -156,4 +153,15 @@ io.on("connect", socket => {
 	//
 	// 	socketJoin(s, shortIdBySocketId[io.sockets.connected[Object.values(socketIdByShortId)[1]].id]);
 	// }
-});
+}
+
+let application = express();
+application.use("/", express.static(`${process.cwd()}/../client/dist/`));
+
+const server = http.createServer(application);
+server.listen(config.port);
+
+io.listen(server, {log: true})
+	.on("connect", socketConnect);
+
+console.log(`Server start listening port ${config.port}`);

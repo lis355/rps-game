@@ -22,7 +22,10 @@ class Player {
 			return;
 
 		// eslint-disable-next-line no-undef
-		this._socket = io("http://localhost:" + PORT)
+		const serverUrl = "http://localhost:" + PORT;
+		console.log(`Connect to server ${serverUrl}`);
+
+		this._socket = io(serverUrl)
 			.on("connect", () => {
 				console.log("Connect");
 				this.onConnect();
