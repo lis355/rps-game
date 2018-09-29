@@ -9,6 +9,7 @@ module.exports = (env, argv) => {
 	}
 
 	let config = {
+		mode: isProduction() ? "production" : "development",
 		entry: path.join(__dirname, "src/js/app.js"),
 		module: {
 			rules: [
