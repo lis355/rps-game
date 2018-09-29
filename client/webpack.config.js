@@ -2,6 +2,7 @@ const path = require("path");
 const appConfig = require("./../common/config");
 const webpack = require("webpack");
 const htmlWebpackPlugin = new require("html-webpack-plugin");
+const uglifyJsPlugin = require("uglifyjs-webpack-plugin");
 
 module.exports = (env, argv) => {
 	function isProduction() {
@@ -47,7 +48,7 @@ module.exports = (env, argv) => {
 			]
 		},
 		plugins: [
-			new webpack.DefinePlugin({PORT: isProduction() ? "" : appConfig.port}),
+			new webpack.DefinePlugin({PORT: isProduction() ? null : appConfig.port}),
 			new webpack.HotModuleReplacementPlugin(),
 			new htmlWebpackPlugin({
 				template: path.join(__dirname, "src/html/index.html"),
@@ -69,6 +70,24 @@ module.exports = (env, argv) => {
 
 	if (!isProduction()) {
 		config.devtool = "source-map";
+	}
+	else {
+		config.optimization = {
+			minimizer: [
+				new uglifyJsPlugin({
+					uglifyOptions: {
+						sourceMap: false,
+						mangle: false,
+						output: {
+							semicolons: true
+						},
+						compress: {
+							warnings: true
+						}
+					}
+				})
+			]
+		};
 	}
 
 	return config;
