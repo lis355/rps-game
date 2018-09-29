@@ -1,8 +1,9 @@
 # rps-game
-React / Socket IO / WebRTC rock-paper-scrissors game with text and video chat 
+React / Socket IO / WebRTC rock-paper-scrissors game with text and video chat
 
 <p align="center"><img src="https://user-images.githubusercontent.com/2791094/45978922-2842ff80-c056-11e8-806a-ff3cab204749.png"
 width=600 height=355></p>
+<p align="center">https://rps-videochat.herokuapp.com/</p>
 
 * Frontend: React JS, WebRTC for video and audio calls, Bootstrap
 * Backend: Node JS
