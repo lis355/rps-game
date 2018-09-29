@@ -158,10 +158,11 @@ function socketConnect(socket) {
 let application = express();
 application.use("/", express.static(`${process.cwd()}/../client/dist/`));
 
+let port = process.env.PORT || config.port;
 const server = http.createServer(application);
-server.listen(config.port);
+server.listen(port);
 
 io.listen(server, {log: true})
 	.on("connect", socketConnect);
 
-console.log(`Server start listening port ${config.port}`);
+console.log(`Server start listening port ${port}`);
